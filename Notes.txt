@@ -106,6 +106,14 @@ LLM can generate 2 types of output - 1. structured output(Func - with_structured
         c. StructuredOutputParser() - It is an output parser in Langchain that helps extract structured JSON data from LLM responses based on predefined field schema, but in this we cannot apply the validation thats why we move to the next parser - PydanticOutputParser()
 
         d. PydanticOutputParser() -  It is a structured output parser in Langchain that used Pydantic models to enforce schema validation when processing LLM response
+ 
+Video Eight ==> Chains(Using Pipe operator("|"))
+
+As without chains before we need to invoke the prompts and model separately to get the response, but after chains we can directly provide it in the single line (e.g prompt | mmodel |parser)
+
+    1. Sequential Chains (Prompt -> LLM -> parser(Optional))
+    2. parellel Chains (Can be designed with the help of RunnableParallel, it is used when we want to have the response from 2 different models parallely (e.g from any study Document I want to generate the notes from one LLM and Quiz from other LLM))
+    3. Conditional Chains (Can be designed with the help of Runnablebranch, it is used when we want to some chain if some condition is satisfied or not, (e.g from the feedback if the feedback is Positive then send the thanking response and if the feedback is Negative then send the email to the user))
 
 Note:
     Agents - Are chatbot on steroids
