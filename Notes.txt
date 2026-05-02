@@ -1,0 +1,111 @@
+================ Generative AI using Langchain =========================
+YT - https://www.youtube.com/watch?v=-xSJA8-o6Eg&list=PLKnIA16_RmvaTbihpo4MtzVm4XOQa0ER0&index=4
+
+Notes => Gen AI campus X
+
+Types of perspective in Gen AI
+
+    1. User perspective
+    2. Builder perspective
+
+Generic term for models:
+
+    Foundational Model = It includes all the models like  text based, image based, video based
+
+Types of searches:
+
+    1. Keyword searches: exact words match
+    2. Semantic searches: understand the intent behind queries
+
+    Note: Refer image  Video 4
+
+==> Video no. 4 
+
+Components of Langchain
+
+    1. models
+    2. prompts
+    3. Chains
+    4. Memory
+    5. indexes
+
+        : Document Loader
+        : Text Splitter
+        : Retrivals
+
+    6. Agents (Specialization: Reasoning capability, tools)
+
+==> Video 5
+
+Q) What is the difference between LLM and chatModels
+Ans) 1. LLM:  Function used through Langchain is difference for both of them
+    2. chatModels provide the response with metadata and whole conversation
+
+Q) Disadvantages of Open source models
+Ans) 1. High Hardware requirement (GPU)
+    2. Setup complexity: Pytorch, tensorflow
+    3. Less fine tuning with human feedback
+    4. Multi modals not supported
+
+Q) 2 ways to run open source models
+Ans) 1. Inference API
+    2. Running locally
+
+==> Video six
+
+Q) What is prompts
+Ans) prompts are the input instruction or queries given to a model to guide its output
+
+creating chat conversation with chat history
+
+Q) What is Messages and their types ?
+Ans) 
+
+        1. System Message
+        2. Human Message
+        3. AI Message
+
+  Use message prompts when:
+
+    - Managing multi-turn conversations
+    - Working with multimodal content (images, audio, files)
+    - Including system instructions
+
+==> Video Seven - Structured output
+
+LLM returning the output in the well-defined format(e.g, JSON format), rather than free format text
+
+Q) Why it is important to store the LLM output in structured format?
+Ans) 1. Data Extraction 
+     2. API Building (getting response in JSON format makes it easy to integrate it anywhere)
+     3. Agents (Agent -> prompts -> (It inputs the Natural language text)LLM(It responds with the structured output) -> Tools (It expects the structure input))
+
+LLM can generate 2 types of output - 1. structured output(Func - with_structured_output()) and 2. Unstructured output(Func - Output parser[To make it structured])
+
+    i. with_structured_output() (before using this we need to define the data_format of the output)
+        a. TypedDict (It defined which keys will be used with there data types with other attributes such as Annotated, Optional, Literal, but the drawback of typedDict is it doesn't give any error if the data types is not followed, so to bypass this drawback we use Pydantic)
+        (When to use: Only need type hint, Don't need Validation)
+
+        b. Pydantic (It is a Data Validation and Data parsing library for Python, it ensure that the data you work with is correct, structured and type-safe)
+        (When to use: Data Validation, Default Values, Automatic type conversion)
+
+        c. json_schema (As JSON is an universal Data format, if we are using JS in frontend and Python in BE then we can make use of json_schema to make it compatible in both cases)
+        (When to use: A Standard JSON format, Don't want to import Python libraries(Pydantic))
+
+    ii. Output Parser - In Langchain it helps convert raw LLM response into structured formats like JSON, CSV, Pydantic models and more. They ensure consistency, Validation, and ease of use in application
+
+        a.StrOutputParser() - It is used to parse the output of a LLM and return it as a plain string
+
+            Response from LLM -> StrOutputParser -> Return only the String(to avoid making use of result.content and it is used to avoid metadata)
+
+            Q) If we have result.content available then why we need to use StrOutputParser()?
+            Ans) It is mainly used to make use of chains, as Without it we need to 
+
+        b. JSONOutputParser() - It is used to parse the output of a LLM and return it as a JSON, but without any structured output schema, thats why we move on to the next parser - StructuredOutputParser()
+
+        c. StructuredOutputParser() - It is an output parser in Langchain that helps extract structured JSON data from LLM responses based on predefined field schema, but in this we cannot apply the validation thats why we move to the next parser - PydanticOutputParser()
+
+        d. PydanticOutputParser() -  It is a structured output parser in Langchain that used Pydantic models to enforce schema validation when processing LLM response
+
+Note:
+    Agents - Are chatbot on steroids
