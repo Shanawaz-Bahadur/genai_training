@@ -71,7 +71,7 @@ Ans)
     - Working with multimodal content (images, audio, files)
     - Including system instructions
 
-==> Video Seven - Structured output
+==> Video Seven and Eight - Structured output
 
 LLM returning the output in the well-defined format(e.g, JSON format), rather than free format text
 
@@ -107,7 +107,7 @@ LLM can generate 2 types of output - 1. structured output(Func - with_structured
 
         d. PydanticOutputParser() -  It is a structured output parser in Langchain that used Pydantic models to enforce schema validation when processing LLM response
  
-Video Eight ==> Chains(Using Pipe operator("|"))
+Video Nine ==> Chains(Using Pipe operator("|"))
 
 As without chains before we need to invoke the prompts and model separately to get the response, but after chains we can directly provide it in the single line (e.g prompt | mmodel |parser)
 
@@ -115,5 +115,193 @@ As without chains before we need to invoke the prompts and model separately to g
     2. parellel Chains (Can be designed with the help of RunnableParallel, it is used when we want to have the response from 2 different models parallely (e.g from any study Document I want to generate the notes from one LLM and Quiz from other LLM))
     3. Conditional Chains (Can be designed with the help of Runnablebranch, it is used when we want to some chain if some condition is satisfied or not, (e.g from the feedback if the feedback is Positive then send the thanking response and if the feedback is Negative then send the email to the user))
 
+Video Ten (ChatGPT) => Runnables
+
+==================================================> RAG <===================================================================================
+
+    RAG is a technique that combines information retrieval(From the knowledge base) with language generation, where a models retrives relevant documents from the knowledge base and then uses them as a context to generate accurate and grounded response. 
+
+    Benefits of RAG:
+
+        1. Use of up-to-date response
+        2. Better Privacy
+        3. No limit of document size
+
+    RAG has 4 main Components:
+
+        1. Document Loader
+        2. Text Splitters
+        3. Vector Databases
+        4. Retrivers
+
+Video 12 => Document Loader
+
+Document loaders are components in LangChain used to load data from various sources into standardized format (usually as Document objects), which can then be used for chunking, embedding, retrieval, and generation
+
+As Data can be extracted from any of the sources like - PDF, Database, S3 Bucket, text files, thats the we need to convert it into a standardized formate which is Document object which mainly consist of  page_content and metadata
+
+Types of Document Loader
+
+    1. Text Loader
+    2. PyPDFLoader
+    3. WebBaseLoader
+    4. CSVLoader
+
+    1. Text Loader: It is a simple and commonly used document loader in LangChain that reads plain text (.txt) files and converts them into LangChain Document objects, it TextLoader() returns a list of Document objects
+
+        Use Case
+
+            - Ideal for loading chat logs, scraped text, transcripts, code snippets, or any plain text data into a LangChain pipeline.
+
+        Limitation
+
+            - Works only with .txt files    
+
+    2. PyPDFLoader: It works page by page, if we provide 25 pages pdf it will return a list of 25 Documents which mainly consist of  page_content and metadata, it is a document loader in LangChain used to load content from PDF files and convert each page into a Document object, it also 
+
+        Limitations:
+
+            - It uses the PyPDF library under the hood - not great with scanned PDFs or complex layouts.
+
+        Below are some other loader as per the usecase
+
+            Simple, clean PDFs - PyPDFLoader
+        
+            PDFs with tables/columns - PDFPlumberLoader
+
+            Scanned/image PDFs - UnstructuredPDFLoader Or AmazonTextractPOFLoader
+
+            Need layout and image data - PyHluPDFLoader
+
+            Want best structure extraction - UnstructuredPDFLoader
+
+    3. WebBaseLoader: It is a document loader in LangChain used to load and extract text content from web pages (URLs).
+
+        It uses Request(to get call the API) BeautifulSoup under the hood to parse HTML and extract visible text.
+
+        When to Use:
+            . For blogs, news articles, or public websites where the content is primarily text-based and static.
+
+        Limitations:
+            . Doesn't handle JavaScript-heavy pages well (use SeleniumURLLoader for that).
+            . Loads only static content (what's in the HTML, not what loads after the page renders).
+
+    Q) In the response how to get the details from where the data has been fetched if we have multiple files to ?
+    Ans) 
+
+    Q) How will you load all the documents available in the particular folder(directory)
+    Directory Loader - DirectoryLoader is a document loader that lets you load multiple documents from a directory (folder) of files.
+
+    Q) As while loading the files from some particular folder, how it will handle if the files is huge and large amount of quantity?
+    Ans) As will not we where using loader.load() which load all documents at once in the memory as we have one more function so that it will load one document at once in the memory and then vanish out the memory which is loader.lazy_load() (load on demand, which returns a generator of Document object) it is used when we want to deal with large document or lot of files
+
+    4. CSVLoader: CSVLoader is a document loader used to load CSV files into LangChain Document objects - one per row, by default, creates an individual Document object of each rows.
+
+    Note: We have multiple loader on the Langchain documentation, and also you can create your own Custom loader.
+
+Video 13 ==> Text Splitters: It is the process of breaking large chunks of text (like articles, PDFs, HTML pages, or books) into smaller, manageable pieces (chunks) that an LLM can handle effectively.
+
+                                        (Large Text -> Smaller chunks)
+
+    Q) Why do we require Text Splitters
+    Ans)
+    1. Overcoming model limitations: Many embedding models and language models have maximum input size constraints. Splitting allows us to process documents that would otherwise exceed these limits.  
+    
+    2. Downstream tasks - Text Splitting improves nearly every LLM powered task  
+
+           Task                  Why Splitting Helps
+        Embedding - Short chunks yield more accurate vectors
+        Semantic Search - Search results point to focused info, not noise
+        Summarization - Prevents hallucination and topic drift  
+    
+    3. Optimizing computational resources: Working with smaller chunks of text can be more memory-efficient and allow for better parallelization of processing tasks.
+
+    => Types of Text Splitters
+
+        1. Length based: CharacterTextSplitter class: 
+
+        This splitter uses a fixed-length, length-based approach. It simply splits text into chunks based on a set number of characters (or tokens if using from_tiktoken_encoder), regardless of semantic boundaries. It Ensure consistent chunk sizes. Used when Uniform text without strong structural cues, or when exact size control is critical.
+
+        2. Text Structure based: RecusiveCharacterTextSplitter class:
+
+        This splitter uses a hierarchical, structure-aware approach. It starts with larger natural text units (e.g., paragraphs split by \n\n), and if a chunk exceeds the chunk_size, it recursively moves to smaller units (\n, then spaces, then characters) until the chunk fits.It  Preserve semantic coherence by keeping natural boundaries intact. It is used when Texts with meaningful structure (articles, essays, code).
+
+        3. Document Structure based: It uses RecusiveCharacterTextSplitter but with some different text_splitters which is mainly used for markdown files or any code file(Python, JS, Java) and we need to specify the language
+
+        4. Semantic Meaning based: SemanticChunker (Its under experimentation)
+
+Video 14 ==> Vector store
+
+Keyword matching
+
+Embedding -> Find Similartiry between both -> Respond
+
+    Q) Why Vector store?
+    Ans) It solves the below 3 challenges faced while building the RAG application:
+            1. Generating Vector Store
+            2. Storage
+            3. Semantic Search
+
+    Q) What is Vector Store?
+    Ans) It is a system designed to store and retrieve data represented as numerical  
+    
+    Key Features  
+    
+        1. Storage - Ensures that vectors and their associated metadata are retained, whether in- memory(RAM) for quick lookups or on-disk for durability and Targe-scale use.  
+        
+        2. Similarity Search - Helps retrieve the vectors most similar to a query vector.  (comparing query vector with all the vectors present in the vector DB)
+        
+        3. Indexing - Provide a data structure or method that enables fast similarity searches on high-dimensional vectors (e.g., Clustering approximate nearest neighbor lookups). Indexing is mainly used to speed-up the process of searching
+        
+        4. CRUD Operations - Manage the lifecycle of data-adding new vectors, reading them, updating existing entries, removing outdated vectors.  
+    
+    Use-cases:
+
+        1. Semantic Search 
+        2. RAG 
+        3. Recommender Systems 
+        4. Image/Multimedia search
+
+    In similarity_search, k stands for the no. of Documents to be retured after searching
+
+Video 15 ==> Retrievers 
+
+    Q) What are Retrievers?
+    Ans) A retriever is a component in LangChain that fetches relevant documents from a data source in response to a user's query.  There are multiple types of retrievers  All retrievers in LangChain are runnables
+
+                                    Query -> Retriever-> Data Source -> Returns multiple Documents
+
+    Types of retrievers
+
+        1. Wikipedia Retrivers (Query -> Wikipedia retrievers API call -> Returns the Document of relevant content)
+
+        2. Vector Store Retriever***: A Vector Store Retriever in LangChain is the most common type of retriever that lets you search and fetch documents from a vector store based on semantic similarity using vector embeddings.
+
+        - How It Works 
+        
+            1. You store your documents in a vector store (like FAISS, Chroma, Weaviate) 
+            2. Each document is converted into a dense vector using an embedding model 
+            3. When the user enters a query:  
+                . It's also turned into a vector  
+                . The retriever compares the query vector with the stored vectors  
+                . It retrieves the top-k most similar ones
+
+        3. Maximum Marginal Relevance(MMR)
+
+            MMR is an information retrieval algorithm designed to reduce redundancy in the retrieved results while maintaining high relevance to the query.
+
+        4. Multi Query Retrivers
+
+            Sometimes a single query might not capture all the ways information is phrased in your documents.
+
+        5. Contextual Compression Retriever
+
+            The Contextual Compression Retriever in LangChain is an advanced retriever that improves retrieval quality by compressing documents after retrieval - keeping only the relevant content based on the user's query.
+
+    Imp note: It is used to improves the response of the LLM so that the most relavant context is extracted from the vectore store.
+
 Note:
-    Agents - Are chatbot on steroids
+    1. Agents - Are chatbot on steroids
+    2. chunk_size -  It is ideally preferred 10% to 20% of chunk_size
+    3. vector_store(FAISS) + database_features = vector_database (e.g., pinecone)
+    4. Any object which has .invoke() function is Runnables
