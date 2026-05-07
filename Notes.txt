@@ -365,7 +365,48 @@ Video 16 ==> RAG
 
         4. Generation: It is the final step where a Large Language Model (LLM) uses the user's query and the retrieved & augmented context to generate a response.
 
+==> Youtube ChatBot (Building project)
 
+    Improvement Methods:
+
+        1. UI based enhancements
+
+        2. Evaluation
+            a. Ragas
+            b. LangSmith
+
+        3. Indexing
+            a. Document Ingestion
+            b. Text Splitting
+            c. Vector Store
+
+        4. Retrieval
+            a. Pre-Retrieval
+                i. Query rewriting using LLM
+                ii. Multi-query generation
+                ili. Domain aware routing
+
+            b. During Retrieval
+                i. MMR
+                ii. Hybrid Retrieval
+                iii. Reranking
+
+            c. Post-Retrieval
+                i. Contextual Compression
+
+        5. Augmentatton
+            a. Prompt Templating
+            b. Answer grounding
+            c. Context window optimization
+
+        6. Generation
+            a. Answer with Citation
+            b. Guard railing
+
+        7. System Design
+            a. Multimodal
+            b. Agentic
+            c. Memory based
 
 
 
